@@ -1,8 +1,10 @@
-# CarbonSync
-How much Carbon your software is producing?
+<div align="center">
+  <img src="assets/logo.svg" width="200" height="200" alt="My Project Logo">
+</div>
 
 # CarbonSync 🌱
 
+> How much Carbon your software is producing?
 > Real-time carbon footprint monitoring and optimization for software systems
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
