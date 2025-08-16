@@ -19,28 +19,28 @@ import asyncio
 import time
 import aiohttp
 from dto import MetricPoint
-from auth import AuthProvider
 
 
 DEFAULT_BUFFER_SIZE = 10
-DEFAULT_INTERVAL_SECONDS = 30
+DEFAULT_FLUSH_INTERVAL_SECONDS = 30
+DEFAULT_COLLECTION_INTERVAL_SECONDS = 3
 
 
 class MetricsBuffer:
     """Responsible for buffering and sending metrics"""
-    def __init__(self, *, endpoint: str, auth_provider: AuthProvider, buffer_size: int = 10, interval_seconds: int = 30):
+    def __init__(self, *, endpoint: str, buffer_size: int = 10, flush_interval_seconds: int = 30):
         self.endpoint = endpoint
-        self.auth_provider = auth_provider
         self.buffer = []
         self.buffer_size = buffer_size
+        self.flush_interval_seconds = flush_interval_seconds
         self.last_flush_time = time.time()
     
-    async def add_metric(self, metric: MetricPoint):
+    async def append(self, metric: MetricPoint):
         """Add a metric to the buffer and send if buffer is full"""
         self.buffer.append(metric)
-        if (len(self.buffer) >= self.buffer_size) or (time.time() - self.last_flush_time >= self.interval_seconds):
+        if (len(self.buffer) >= self.buffer_size) or (time.time() - self.last_flush_time >= self.flush_interval_seconds):
             await self.flush()
-    
+
     async def flush(self):
         """Send all buffered metrics"""
         if not self.buffer:
@@ -52,8 +52,9 @@ class MetricsBuffer:
         try:
             await self._send_metrics(metrics_to_send)
         except Exception as e:
+            raise e
             # Handle error, potentially requeue
-            self.buffer = metrics_to_send + self.buffer
+            # self.buffer = metrics_to_send + self.buffer
             # Implement backoff/retry logic
     
     async def _send_metrics(self, metrics):
@@ -65,10 +66,12 @@ class MetricsBuffer:
             'headers': {'Content-Type': 'application/json'}
         }
         
-        # Apply authentication
-        request_data = await self.auth_provider.authenticate(request_data)
+        from pprint import pprint
+        pprint(request_data)
         
-        # Send request
+        # TODO: handle authentication
+        
+        # Dump data
         async with aiohttp.ClientSession() as session:
             async with session.post(**request_data) as response:
                 if response.status >= 400:
@@ -76,38 +79,30 @@ class MetricsBuffer:
 
 class ResourceMonitor:
     def __init__(self, 
-                 *, 
-                 service_name: str, 
-                 endpoint: str, 
-                #  auth_provider: AuthProvider, 
-                 buffer_size: int = DEFAULT_BUFFER_SIZE, 
-                 interval_seconds: int = DEFAULT_INTERVAL_SECONDS):
+                    *, 
+                    service_name: str, 
+                    endpoint: str, 
+                    buffer_size: int = DEFAULT_BUFFER_SIZE,
+                    flush_interval_seconds: int = DEFAULT_FLUSH_INTERVAL_SECONDS):
         
-        self.service_name = service_name
-        self.endpoint = endpoint
-        # self.auth_provider = auth_provider
         self.running = False
+        self.service_name = service_name
+        self.metrics_buffer = self.get_buffer_instance(endpoint=endpoint,
+                                                        buffer_size=buffer_size, 
+                                                        flush_interval_seconds=flush_interval_seconds)
         
-        # Dependency injection - pass the sender function to the buffer
-        # self.metrics_buffer = MetricsBuffer(
-        #     # sender_function=self._send_metrics_batch,
-        #     buffer_size=buffer_size,
-        #     interval_seconds=interval_seconds
-        # )
-    
-    async def _send_metrics_batch(self, metrics_batch):
-        """Implementation of the sender function that the buffer will call"""
-        payload = {
-            "metrics": [metric.__dict__ for metric in metrics_batch],
-            "api_key": self.api_key
-        }
-        print(payload)
-        # Implement actual sending logic here
-        # async with aiohttp.ClientSession() as session:
-        #     async with session.post(self.endpoint, json=payload) as response:
-        #         if response.status >= 400:
-        #             raise Exception(f"Failed to send metrics: {await response.text()}")
+    def get_buffer_instance(self, 
+                            *, 
+                            endpoint: str, 
+                            buffer_size: int, 
+                            flush_interval_seconds: int):
         
+        return MetricsBuffer(
+            endpoint=endpoint,
+            buffer_size=buffer_size,
+            flush_interval_seconds=flush_interval_seconds
+        )
+
     def _collect_metrics(self) -> MetricPoint:
         """Collect system metrics"""
         return MetricPoint(
@@ -121,25 +116,22 @@ class ResourceMonitor:
             # instance_type=self._detect_instance_type()
         )
     
-    async def start_monitoring(self, interval: int = 3):
+    async def start_monitoring(self, collection_interval_seconds: int = 3):
         self.running = True
         while self.running:
             metric = self._collect_metrics()
-            from pprint import pprint
-            pprint(metric)
-            # await self.metrics_buffer.add(metric)
-            await asyncio.sleep(interval)
+            await self.metrics_buffer.append(metric)
+            await asyncio.sleep(collection_interval_seconds)
 
 
 # Usage
 # User configures buffer size and other parameters
 monitor = ResourceMonitor(
     service_name="my-service",
-    endpoint="localhost:8991/v1/metrics/",
-    # api_key="your-api-key",
+    endpoint="http://127.0.0.1:8000/v1/metrics/",
     buffer_size=20,
-    interval_seconds=10
+    flush_interval_seconds=5
 )
 
 # Start monitoring
-asyncio.run(monitor.start_monitoring(interval=15))
+asyncio.run(monitor.start_monitoring(collection_interval_seconds=3))
