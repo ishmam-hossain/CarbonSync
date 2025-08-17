@@ -5,7 +5,8 @@
 # CarbonSync 🌱
 
 > How much Carbon your software is producing?
-> Real-time carbon footprint monitoring and optimization for software systems
+
+> Real-time carbon footprint monitoring and optimization for software systems.
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/release/python-380/)
@@ -70,7 +71,7 @@ docker-compose up -d
 ### Option 1: Docker Compose (Recommended)
 
 ```bash
-git clone https://github.com/yourusername/carbonsync.git
+git clone https://github.com/ishmam-hossain/carbonsync.git
 cd carbonsync
 docker-compose up -d
 ```
@@ -79,7 +80,7 @@ docker-compose up -d
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/carbonsync.git
+git clone https://github.com/ishmam-hossain/carbonsync.git
 cd carbonsync
 
 # Install dependencies
@@ -144,7 +145,7 @@ $ carbonsync status --service web-api
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/carbonsync.git
+git clone https://github.com/ishmam-hossain/carbonsync.git
 cd carbonsync
 
 # Create virtual environment
@@ -191,9 +192,9 @@ This project is licensed under the MIT License - see the <LICENSE> file for deta
 
 ## 📞 Support
 
-- 🐛 [Report Issues](https://github.com/yourusername/carbonsync/issues)
-- 💬 [Discussions](https://github.com/yourusername/carbonsync/discussions)
-- 📧 Contact: hello@carbonsync.dev
+- 🐛 [Report Issues](https://github.com/ishmam-hossain/carbonsync/issues)
+- 💬 [Discussions](https://github.com/ishmam-hossain/carbonsync/discussions)
+- 📧 Contact: ishmam.dev@gmail.com
 
 -----
 
