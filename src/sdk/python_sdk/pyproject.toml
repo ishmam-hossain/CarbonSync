@@ -6,5 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "aiohttp>=3.12.15",
+    "kafka-python>=2.2.15",
     "psutil>=7.0.0",
+    "python-decouple>=3.8",
 ]

@@ -95,13 +95,13 @@ python -m carbonsync.api.gateway
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
 │   SDK Agents    │───▶│ Message Broker   │───▶│  Time-Series DB │
-│ (Python/Node.js)│    │ (Kafka)          │    │ (ClickHouse)    │
+│ (Python/Node.js)│    │ (Kafka)          │    │                 │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
                                 │                       │
                                 ▼                       ▼
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Dashboard     │◀───│  Analytics API   │◀───│   ML Pipeline   │
-│   (React)       │    │  (FastAPI)       │    │  (XGBoost)      │
+│   Dashboard     │◀───│  Analytics API   │◀───│ AI/ML Pipeline  │
+│   (React)       │    │  (FastAPI)       │    │                 │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
 

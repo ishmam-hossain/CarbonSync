@@ -1,26 +1,26 @@
 # carbonsync/api/gateway.py
 from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks
-# from pydantic import BaseModel, Field
-# from typing import List, Dict
+from pydantic import BaseModel, Field
+from typing import List, Dict
 # import asyncio
 # import kafka
 from datetime import datetime
 
 app = FastAPI(title="CarbonSync Data Gateway")
 
-# class MetricPayload(BaseModel):
-#     timestamp: float
-#     service_name: str
-#     cpu_usage: float = Field(ge=0, le=100)
-#     memory_usage: float = Field(ge=0, le=100)
-#     network_io: Dict[str, int]
-#     disk_io: Dict[str, int]
-#     cloud_region: str
-#     instance_type: str
+class MetricPayload(BaseModel):
+    timestamp: float
+    service_name: str
+    cpu_usage: float = Field(ge=0, le=100)
+    memory_usage: float = Field(ge=0, le=100)
+    network_io: Dict[str, int]
+    disk_io: Dict[str, int]
+    # cloud_region: str
+    # instance_type: str
 
-# class BatchPayload(BaseModel):
-#     metrics: List[MetricPayload]
-#     api_key: str
+class BatchPayload(BaseModel):
+    metrics: List[MetricPayload]
+    # api_key: str
 
 # class CarbonCalculator:
 #     """Calculate CO2 emissions from resource usage"""
@@ -67,10 +67,11 @@ app = FastAPI(title="CarbonSync Data Gateway")
 
 @app.post("/v1/metrics/")
 async def ingest_metrics(
-    payload,
+    payload: BatchPayload,
     # background_tasks: BackgroundTasks
 ):
     """Ingest metrics batch"""
+    
     from pprint import pprint
     pprint(payload)
     # Validate API key
