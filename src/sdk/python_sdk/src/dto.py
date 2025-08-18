@@ -14,11 +14,12 @@
 # See <https://opensource.org/licenses/MIT>.
 
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, List
 
 
 @dataclass
 class MetricPoint:
+    """Represents a single metric point"""
     timestamp: float
     service_name: str
     cpu_usage: float
@@ -27,3 +28,14 @@ class MetricPoint:
     disk_io: Dict[str, int]
     # cloud_region: str
     # instance_type: str
+    
+@dataclass
+class CodeMetrics:
+    """Metrics collected from code analysis"""
+    complexity: int
+    lines_of_code: int
+    num_functions: int
+    async_functions: int
+    memory_patterns: List[str]
+    optimization_suggestions: List[str]
+    ai_suggestions: str

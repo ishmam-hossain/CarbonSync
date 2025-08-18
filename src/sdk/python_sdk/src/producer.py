@@ -23,19 +23,7 @@ from kafka.errors import KafkaError
 from logger import setup_logger
 
 logger = setup_logger()
-
-
-# get environment variables
-KAFKA_BROKER = config('KAFKA_BROKER')
-KAFKA_TOPIC = config('KAFKA_TOPIC')
-
-if not KAFKA_BROKER or not KAFKA_TOPIC:
-    logger.error("KAFKA_BROKER and KAFKA_TOPIC must be set in the environment variables.")
-    raise ValueError("KAFKA_BROKER and KAFKA_TOPIC must be set in the environment variables.")
-
-
 logger.info("Starting Kafka producer setup...")
-
 
 class MetricProducer:
     def __init__(self, broker, topic):
@@ -79,6 +67,8 @@ class MetricProducer:
             raise e
 
 
+def initialize_producer(broker: str, topic: str) -> MetricProducer:
+    """Initializes the Kafka producer with configuration from environment variables."""
+    return MetricProducer(broker=broker, topic=topic)
 
-dump_metrics = MetricProducer(broker=KAFKA_BROKER, topic=KAFKA_TOPIC)
-
+logger.info("Kafka producer setup completed.")

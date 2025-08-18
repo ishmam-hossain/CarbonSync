@@ -20,13 +20,20 @@ import psutil
 from decouple import config
 
 from dto import MetricPoint
-from producer import dump_metrics
+from producer import initialize_producer
 
+from logger import setup_logger
+logger = setup_logger()
 
 DEFAULT_BUFFER_SIZE = config('DEFAULT_BUFFER_SIZE', default=10, cast=int)
 DEFAULT_FLUSH_INTERVAL_SECONDS = config('DEFAULT_FLUSH_INTERVAL_SECONDS', default=30, cast=int)
 DEFAULT_COLLECTION_INTERVAL_SECONDS = config('DEFAULT_COLLECTION_INTERVAL_SECONDS', default=3, cast=int)
 
+
+send_metrics = initialize_producer(
+    broker=config('METRIC_BROKER', default='localhost:9092'),
+    topic=config('METRIC_TOPIC', default='metrics')
+)
 
 class MetricsBuffer:
     """Responsible for buffering and sending metrics"""
@@ -57,7 +64,7 @@ class MetricsBuffer:
     
     async def _send_metrics(self, metrics):
         payload = {"metrics": [metric.__dict__ for metric in metrics]}
-        dump_metrics(message=payload)
+        send_metrics(message=payload)
 
 
 class ResourceMonitor:
