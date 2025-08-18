@@ -24,6 +24,8 @@ from decouple import config
 from logger import setup_logger
 from dto import CodeMetrics
 from producer import initialize_producer
+from ai_integration.main import AIOrchestrator
+
 from exceptions import CodeAnalysisError
 
 
@@ -51,7 +53,8 @@ class CodeAnalyzer:
     def get_code_metrics(self, func: Callable) -> CodeMetrics:
         """Extract code metrics from the function's AST."""
         _, tree = self.get_cleaned_code_source_tree(func)
-        
+        ai_suggestions = self._generate_optimization_suggestions_ai(tree)
+
         return CodeMetrics(
             complexity=self._calculate_complexity(tree),
             lines_of_code=len(inspect.getsource(func).splitlines()),
@@ -59,16 +62,16 @@ class CodeAnalyzer:
             async_functions=sum(1 for node in ast.walk(tree) if isinstance(node, ast.AsyncFunctionDef)),
             memory_patterns=self._detect_memory_patterns(tree),
             optimization_suggestions=self._generate_suggestions(tree),
-            ai_suggestions=self._generate_optimization_suggestions_ai(tree)
+            ai_suggestions=ai_suggestions
         )
         
     def __call__(self, func: Callable) -> Callable:
         """Make the class callable as a decorator"""
         @functools.wraps(func)
-        async def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs):
             # Execute function and measure time
             start_time = datetime.now()
-            result = await func(*args, **kwargs) if inspect.iscoroutinefunction(func) else func(*args, **kwargs)
+            result = func(*args, **kwargs) if inspect.iscoroutinefunction(func) else func(*args, **kwargs)
             execution_time = (datetime.now() - start_time).total_seconds()
             # Send analysis results
             self._send_analysis_results(func.__name__, metrics, execution_time)
@@ -121,9 +124,9 @@ class CodeAnalyzer:
     
     def _generate_optimization_suggestions_ai(self, tree: ast.AST) -> str:
         """Get AI-generated suggestions for code improvements"""
-        # Placeholder for AI integration
-        # In a real implementation, this would call an AI service to analyze the code
-        return "AI suggestions: Consider refactoring for better performance and readability."
+        orchestrator = AIOrchestrator()
+        result = orchestrator.analyze_code_tree(tree)
+        return result
     
     def _send_analysis_results(self, function_name: str, metrics: CodeMetrics, execution_time: float) -> None:
         """Send analysis results to Kafka"""
@@ -138,7 +141,8 @@ class CodeAnalyzer:
                 "num_functions": metrics.num_functions,
                 "async_functions": metrics.async_functions,
                 "memory_patterns": metrics.memory_patterns,
-                "optimization_suggestions": metrics.optimization_suggestions
+                "optimization_suggestions": metrics.optimization_suggestions,
+                "ai_suggestions": metrics.ai_suggestions
             }
         }
         
