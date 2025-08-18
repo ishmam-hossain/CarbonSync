@@ -64,24 +64,22 @@ class ResourceMonitor:
     def __init__(self, 
                     *, 
                     service_name: str, 
-                    endpoint: str, 
                     buffer_size: int = DEFAULT_BUFFER_SIZE,
                     flush_interval_seconds: int = DEFAULT_FLUSH_INTERVAL_SECONDS):
         
         self.running = False
         self.service_name = service_name
-        self.metrics_buffer = self.get_buffer_instance(endpoint=endpoint,
-                                                        buffer_size=buffer_size, 
-                                                        flush_interval_seconds=flush_interval_seconds)
+        self.metrics_buffer = self.get_buffer_instance(
+            buffer_size=buffer_size, 
+            flush_interval_seconds=flush_interval_seconds
+        )
         
     def get_buffer_instance(self, 
                             *, 
-                            endpoint: str, 
                             buffer_size: int, 
                             flush_interval_seconds: int):
         
         return MetricsBuffer(
-            endpoint=endpoint,
             buffer_size=buffer_size,
             flush_interval_seconds=flush_interval_seconds
         )
@@ -109,11 +107,11 @@ class ResourceMonitor:
 
 # Usage
 # User configures buffer size and other parameters
-monitor = ResourceMonitor(
-    service_name="my-service",
-    buffer_size=20,
-    flush_interval_seconds=5
-)
+# monitor = ResourceMonitor(
+#     service_name="my-service",
+#     buffer_size=20,
+#     flush_interval_seconds=5
+# )
 
-# Start monitoring
-asyncio.run(monitor.start_monitoring(collection_interval_seconds=3))
+# # Start monitoring
+# asyncio.run(monitor.start_monitoring(collection_interval_seconds=3))
