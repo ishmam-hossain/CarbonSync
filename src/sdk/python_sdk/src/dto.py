@@ -16,7 +16,6 @@
 from dataclasses import dataclass
 from typing import Dict, List
 
-
 @dataclass
 class MetricPoint:
     """Represents a single metric point"""
@@ -39,3 +38,37 @@ class CodeMetrics:
     memory_patterns: List[str]
     optimization_suggestions: List[str]
     ai_suggestions: str
+
+
+@dataclass
+class LineProfile:
+    line_number: int
+    source: str
+    execution_count: int
+    total_time: float
+    avg_time: float
+    memory_allocated: float  # in MB
+    cpu_usage: float  # percentage
+
+@dataclass
+class ResourceMetrics:
+    peak_memory: float  # in MB
+    average_memory: float
+    memory_growth: float
+    cpu_time: float
+    io_operations: int
+    network_calls: int
+    database_queries: int
+    thread_count: int
+    gc_collections: Dict[str, int]  # generation-wise collections
+    context_switches: int
+
+@dataclass
+class PerformanceMetrics:
+    line_profiles: List[LineProfile]
+    hotspots: List[Dict[str, any]]  # Performance bottlenecks
+    resource_usage: ResourceMetrics
+    execution_pattern: str  # CPU-bound, IO-bound, Memory-bound
+    scalability_score: float  # 0-1 score
+    async_efficiency: float  # For async functions
+    throughput: float  # operations/second

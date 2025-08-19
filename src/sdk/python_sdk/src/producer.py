@@ -50,7 +50,7 @@ class MetricProducer:
     def __str__(self):
         return json.dumps(self.data, indent=2)
     
-    def __call__(self, message: dict, ):
+    async def __call__(self, message: dict, ):
         try:
             future = self.producer.send(self.topic, value=message)
             record_metadata = future.get(timeout=10)  # Wait for the send to complete
@@ -67,7 +67,7 @@ class MetricProducer:
             raise e
 
 
-def initialize_producer(broker: str, topic: str) -> MetricProducer:
+async def initialize_producer(broker: str, topic: str) -> MetricProducer:
     """Initializes the Kafka producer with configuration from environment variables."""
     return MetricProducer(broker=broker, topic=topic)
 
