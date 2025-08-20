@@ -108,7 +108,7 @@ python -m carbonsync.api.gateway
 ```
 
 <div align="center">
-  <img src="assets/architecture.jpg" width="200" height="200" alt="My Project Logo">
+  <img src="assets/architecture.jpg" height="600" alt="Architecture">
 </div>
 
 ## 📊 Example Output
