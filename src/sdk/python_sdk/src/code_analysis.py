@@ -118,4 +118,4 @@ analyzer = CodeAnalyzer(service_name=config('SERVICE_NAME', default="code_analyz
 #         except Exception as e:
 #             logger.error(f"Main execution error: {str(e)}")
 
-#     asyncio.run(main())
+#     asyncio.run(main())e
