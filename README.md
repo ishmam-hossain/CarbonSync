@@ -107,6 +107,10 @@ python -m carbonsync.api.gateway
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
 
+<div align="center">
+  <img src="assets/architecture.jpg" width="200" height="200" alt="My Project Logo">
+</div>
+
 ## 📊 Example Output
 
 ```bash
